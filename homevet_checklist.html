@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星期一下午 Homevet 探訪問題清單 — 奧莉絲</title>
+<style>
+  :root {
+    --ink: #2b2b2b;
+    --soft: #5f6b66;
+    --teal: #2e6b66;
+    --tealbg: #e8f1ef;
+    --red: #9c3a33;
+    --redbg: #f6e7e5;
+    --amber: #8a6d2f;
+    --amberbg: #f4eddb;
+    --purple: #534ab7;
+    --purplebg: #ecebf8;
+    --coral: #b14d2a;
+    --coralbg: #f8e9e2;
+    --line: #cfd8d4;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: "PingFang HK", "Microsoft JhengHei", "Heiti TC", "Noto Sans CJK TC",
+                  -apple-system, sans-serif;
+    color: var(--ink);
+    background: #fafafa;
+    margin: 0;
+    padding: 24px 16px 60px;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px 20px 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--teal);
+    margin: 0 0 4px;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .meta {
+    font-size: 13px;
+    color: var(--soft);
+    margin: 0;
+  }
+
+  .progress {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--soft);
+    white-space: nowrap;
+  }
+
+  .gaba-note {
+    font-size: 13px;
+    color: #8a8a85;
+    margin: 4px 0 18px;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 0 0 18px;
+  }
+
+  .group {
+    border-radius: 8px;
+    padding: 12px 14px 8px;
+    margin-bottom: 14px;
+    border-left: 4px solid;
+  }
+
+  .group.c-red    { background: var(--redbg);    border-color: var(--red); }
+  .group.c-amber  { background: var(--amberbg);  border-color: var(--amber); }
+  .group.c-purple { background: var(--purplebg); border-color: var(--purple); }
+  .group.c-teal   { background: var(--tealbg);   border-color: var(--teal); }
+  .group.c-coral  { background: var(--coralbg);  border-color: var(--coral); }
+
+  .ghead {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14.5px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .group.c-red    .ghead { color: var(--red); }
+  .group.c-amber  .ghead { color: var(--amber); }
+  .group.c-purple .ghead { color: var(--purple); }
+  .group.c-teal   .ghead { color: var(--teal); }
+  .group.c-coral  .ghead { color: var(--coral); }
+
+  .ghead .icon {
+    font-size: 17px;
+    line-height: 1;
+  }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 14.5px;
+    line-height: 1.55;
+    cursor: pointer;
+  }
+
+  .item input {
+    margin-top: 3px;
+    flex-shrink: 0;
+    width: 17px;
+    height: 17px;
+    accent-color: var(--teal);
+    cursor: pointer;
+  }
+
+  .item input:checked + span {
+    color: var(--soft);
+    text-decoration: line-through;
+  }
+
+  .footer {
+    font-size: 12px;
+    color: #9a9a95;
+    text-align: center;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="meta-row">
+      <p class="meta">星期六 6月13日 13:10 — 奧莉絲休息良好</p>
+      <span class="progress"><span id="checked-count">0</span> / <span id="total-count">14</span></span>
+    </div>
+    <h1>星期一下午 Homevet 探訪問題清單</h1>
+    <p class="gaba-note">加巴噴丁：昨晚給咗0.4ml一次，之後未再給。</p>
+    <hr>
+
+    <div class="group c-red">
+      <div class="ghead"><span class="icon">🩸</span><span>頸部傷口 — 發展速度及嚴重程度</span></div>
+      <label class="item"><input type="checkbox"><span>傷口由幾個細小病灶，大約一個月內變成現時開放性潰瘍嘅狀態 — 呢個速度反映腫瘤而家嘅生長/侵襲性係點？</span></label>
+      <label class="item"><input type="checkbox"><span>用手摸，個腫塊而家係細咗、一樣、定係大咗？同預期Palladia有效果嘅情況比較係點？</span></label>
+      <label class="item"><input type="checkbox"><span>出血程度屬正常範圍，定係需要即時處理？</span></label>
+      <label class="item"><input type="checkbox"><span>喺家應該點樣做傷口護理及清潔 — 包括清潔方法、感染監察、同防蠅措施？</span></label>
+    </div>
+
+    <div class="group c-amber">
+      <div class="ghead"><span class="icon">💊</span><span>止痛方案</span></div>
+      <label class="item"><input type="checkbox"><span>頸部傷口喺家嘅止痛方案係點 — buprenorphine是否適合佢，同Palladia及Atopica一齊用會點？</span></label>
+      <label class="item"><input type="checkbox"><span>雖然佢依家食慾及休息都正常，但你嘅判斷係佢而家有冇痛？</span></label>
+    </div>
+
+    <div class="group c-purple">
+      <div class="ghead"><span class="icon">⚪</span><span>加巴噴丁 — 之後點用</span></div>
+      <label class="item"><input type="checkbox"><span>昨晚0.4ml（VSH舊嘅術後劑量）佢反應良好 — 之後應該係：每晚0.4ml、日夜各0.4ml、定係分開早晚各0.2ml？</span></label>
+      <label class="item"><input type="checkbox"><span>3個月前嘅藥水裝gabapentin（有效期、保存方式、外觀）仲可唔可以用，定係需要重新處方？</span></label>
+      <label class="item"><input type="checkbox"><span>連續幾日使用，有咩跡象代表藥效積累，需要留意？</span></label>
+    </div>
+
+    <div class="group c-teal">
+      <div class="ghead"><span class="icon">🛡️</span><span>舔咬及自我創傷</span></div>
+      <label class="item"><input type="checkbox"><span>頸部呢個位置，戴頭罩、軟領圈、定係復健衣，邊樣最適合？</span></label>
+      <label class="item"><input type="checkbox"><span>佢舔嘅行為，有幾多成係皮膚痕癢引致、幾多成係痛引致 — 呢樣會唔會影響方案？</span></label>
+    </div>
+
+    <div class="group c-coral">
+      <div class="ghead"><span class="icon">✂️</span><span>手術選項及大局</span></div>
+      <label class="item"><input type="checkbox"><span>以頸部位置同佢現時狀態嚟講，呢個腫塊現實上有冇可能完全切除 — 定係手術帶來嘅傷害會大過幫助？</span></label>
+      <label class="item"><input type="checkbox"><span>以呢個局部惡化嘅速度，舒適期現實上仲有幾耐 — 幾星期定幾個月？對之後嘅安排有咩意義？</span></label>
+      <label class="item"><input type="checkbox"><span>有咩具體跡象，代表傷口已經超出紓緩照護能應付嘅範圍？</span></label>
+    </div>
+
+    <p class="footer">奧莉絲健康追蹤 · 2026年6月 · Homevet — Dr. Matthew Murdoch · 9860 5522</p>
+  </div>
+
+<script>
+  const boxes = document.querySelectorAll('input[type="checkbox"]');
+  const countEl = document.getElementById('checked-count');
+  document.getElementById('total-count').textContent = boxes.length;
+  function update() {
+    countEl.textContent = document.querySelectorAll('input[type="checkbox"]:checked').length;
+  }
+  boxes.forEach(b => b.addEventListener('change', update));
+</script>
+</body>
+</html>
