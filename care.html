@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>奧莉絲 · 照護提示</title>
+<style>
+  :root{
+    --ink:#23241f;--ink-soft:#54564c;--ink-faint:#8b8d80;
+    --paper:#f5f2ea;--card:#fffdf8;--line:#ddd7c8;--line-soft:#ebe6d9;
+    --sage:#5f7355;--sage-bg:#e9eee2;--clay:#b5623c;--clay-bg:#f6e8df;
+    --gold:#9a7b1e;--gold-bg:#f6efd6;--slate:#4f6a82;--slate-bg:#e7edf2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:"PingFang HK","PingFang TC","Microsoft JhengHei","Noto Sans TC","Heiti TC",sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.6;
+    padding:clamp(14px,4vw,40px);max-width:820px;margin:0 auto;
+    font-size:clamp(15px,1.5vw,16px);
+  }
+  header{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:16px}
+  .kicker{font-size:.7rem;letter-spacing:.14em;color:var(--clay);font-weight:700;margin-bottom:8px}
+  h1{font-size:clamp(1.5rem,5vw,2.2rem);font-weight:800;line-height:1.2}
+  .updated{color:var(--ink-faint);font-size:.8rem;margin-top:8px}
+
+  .obj{background:var(--sage-bg);border-left:5px solid var(--sage);border-radius:6px;padding:14px 16px;margin-bottom:16px}
+  .obj .row{display:flex;gap:11px;align-items:baseline;margin-bottom:6px}
+  .obj .row:last-child{margin-bottom:0}
+  .obj .n{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;align-self:center}
+  .obj .row.two .n{background:var(--ink-faint)}
+  .obj b{font-weight:800}
+
+  /* tabs */
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;position:sticky;top:0;background:var(--paper);padding:10px 0;margin-bottom:14px;z-index:20;border-bottom:1px solid var(--line)}
+  .tab{font-size:.9rem;font-weight:800;border:1px solid var(--line);background:var(--card);color:var(--ink-soft);border-radius:8px;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:6px}
+  .tab.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .tab .warndot{width:7px;height:7px;border-radius:50%;background:var(--gold)}
+  .tab.focusdot::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--clay);display:inline-block}
+  .tabpanel{display:none;animation:fade .2s ease}
+  .tabpanel.active{display:block}
+  @keyframes fade{from{opacity:.4}to{opacity:1}}
+
+  h2{font-size:1.12rem;font-weight:800;margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  h2:first-child{margin-top:6px}
+  h3{font-size:.95rem;font-weight:800;color:var(--ink-soft);margin:14px 0 6px}
+  .tag{font-size:.6rem;letter-spacing:.08em;padding:2px 8px;border-radius:100px;font-weight:700}
+  .tag.good{background:var(--sage-bg);color:var(--sage)}
+  .tag.watch{background:var(--gold-bg);color:var(--gold)}
+  .tag.act{background:var(--clay-bg);color:var(--clay)}
+  .tag.info{background:var(--slate-bg);color:var(--slate)}
+  .tag.focus{background:var(--clay);color:#fff}
+
+  p{margin-bottom:8px}
+  .key{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:12px 15px;margin-bottom:10px}
+  .key b{font-weight:800}
+  strong{font-weight:800}
+  .hot{color:var(--clay);font-weight:800}
+  ul.plain{list-style:none;margin:4px 0 8px}
+  ul.plain li{position:relative;padding-left:18px;margin-bottom:7px;color:var(--ink-soft);font-size:.95rem}
+  ul.plain li::before{content:"";position:absolute;left:2px;top:.7em;width:6px;height:6px;border-radius:50%;background:var(--ink-faint)}
+  ul.plain li b{color:var(--ink);font-weight:800}
+
+  .prog{display:flex;align-items:center;gap:6px;margin:12px 0 6px;flex-wrap:wrap}
+  .prog .step{flex:1;min-width:130px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+  .prog .step .when{font-size:.68rem;color:var(--ink-faint);font-weight:700;letter-spacing:.05em}
+  .prog .step .what{font-size:.9rem;margin-top:3px}
+  .prog .arrow{color:var(--ink-faint);font-weight:800;flex-shrink:0}
+
+  .sa{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;margin:10px 0}
+  .sa .pill{font-size:.62rem;font-weight:800;padding:3px 8px;border-radius:5px;height:fit-content;white-space:nowrap;align-self:start;margin-top:2px}
+  .pill.do{background:var(--clay-bg);color:var(--clay)}
+  .pill.if{background:var(--gold-bg);color:var(--gold)}
+  .pill.ok{background:var(--sage-bg);color:var(--sage)}
+  .pill.urgent{background:#8f2f2f;color:#fff}
+  .sa div.t{color:var(--ink-soft);font-size:.95rem}
+  .sa div.t b{color:var(--ink);font-weight:800}
+
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:10px 0}
+  table{border-collapse:collapse;width:100%;min-width:440px;background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line-soft);font-size:.9rem}
+  thead th{background:var(--ink);color:var(--paper);font-weight:700}
+  tbody th{font-weight:800;white-space:nowrap}
+  tbody tr:last-child td,tbody tr:last-child th{border-bottom:none}
+
+  .trend{display:flex;align-items:flex-end;gap:5px;height:64px;margin:12px 0 3px}
+  .trend .b{flex:1;background:var(--sage);border-radius:3px 3px 0 0;opacity:.9}
+  .tx{display:flex;gap:5px}
+  .tx div{flex:1;text-align:center;font-size:.58rem;color:var(--ink-faint)}
+
+  .checklist{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 16px}
+  .chk{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid var(--line-soft);cursor:pointer;user-select:none}
+  .chk:last-child{border-bottom:none}
+  .chk input{position:absolute;opacity:0;width:0;height:0}
+  .chk .box{flex-shrink:0;width:20px;height:20px;border:2px solid var(--clay);border-radius:5px;margin-top:1px;position:relative;transition:.15s;background:#fff}
+  .chk input:checked ~ .box{background:var(--clay);border-color:var(--clay)}
+  .chk input:checked ~ .box::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+  .chk .txt{font-size:.95rem;line-height:1.5}
+  .chk input:checked ~ .txt{color:var(--ink-faint)}
+  .chk .txt b{font-weight:800}
+  .chk input:focus-visible ~ .box{outline:2px solid var(--slate);outline-offset:2px}
+
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .btn{font-size:.9rem;font-weight:800;border:none;border-radius:7px;padding:11px 18px;cursor:pointer}
+  .btn.save{background:var(--clay);color:#fff}
+  .btn.save:active{transform:translateY(1px)}
+  .btn.ghost{background:none;border:1px solid var(--line);color:var(--slate);font-weight:700}
+  .toast{font-size:.85rem;color:var(--sage);font-weight:800;margin-top:10px;min-height:1.1em}
+
+  .streak{display:flex;align-items:center;gap:14px;background:var(--sage-bg);border-radius:8px;padding:14px 16px;margin:14px 0}
+  .streak .big{font-size:2rem;font-weight:800;color:var(--sage);line-height:1}
+  .streak .lbl{font-size:.85rem;color:var(--ink-soft)}
+  .hbars{display:flex;align-items:flex-end;gap:4px;height:70px;margin:12px 0 4px;overflow-x:auto}
+  .hbars .col{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:26px}
+  .hbars .bar{width:16px;background:var(--sage);border-radius:3px 3px 0 0;opacity:.85}
+  .hbars .bar.low{background:var(--gold)}
+  .hbars .d{font-size:.55rem;color:var(--ink-faint);white-space:nowrap}
+  .htable{width:100%;border-collapse:collapse;margin-top:8px}
+  .htable td{padding:7px 10px;border-bottom:1px solid var(--line-soft);font-size:.9rem}
+  .htable td:first-child{font-weight:800;white-space:nowrap}
+  .htable td:last-child{text-align:right;color:var(--sage);font-weight:800}
+  .stars{letter-spacing:2px;color:var(--clay)}
+  .empty{color:var(--ink-faint);font-size:.88rem;padding:10px 0}
+  .note{font-size:.78rem;color:var(--ink-faint);margin-top:10px;line-height:1.5}
+
+  footer{margin-top:30px;padding-top:14px;border-top:1px solid var(--line);color:var(--ink-faint);font-size:.78rem}
+  footer b{color:var(--ink-soft)}
+  @media print{
+    body{background:#fff;padding:0;font-size:11pt}
+    .tabs{display:none}
+    .tabpanel{display:block!important}
+    .key,table,.obj,.checklist,.prog .step{break-inside:avoid}
+    .btnrow,.btn{display:none}
+    h2{margin-top:20px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">奧莉絲 · 短期至中期照護提示</div>
+  <h1>奧莉絲 · 照護提示</h1>
+  <div class="updated">更新：2026年7月2日 · 給 Steven 與 Susan</div>
+</header>
+
+<!-- 目標：常駐於所有分頁之上 -->
+<div class="obj">
+  <div class="row"><div class="n">1</div><div><b>首要目標：盡量提升奧莉絲的舒適。</b></div></div>
+  <div class="row two"><div class="n">2</div><div><b>次要目標（較低優先）：延長奧莉絲的壽命。</b></div></div>
+</div>
+
+<!-- 分頁按鈕 -->
+<div class="tabs">
+  <button class="tab active" data-tab="main">主要</button>
+  <button class="tab focusdot" data-tab="neck">頸部腫瘤與傷口</button>
+  <button class="tab" data-tab="belly">腹部 / 肚 <span class="warndot"></span></button>
+</div>
+
+<!-- ================= 主要分頁 ================= -->
+<div class="tabpanel active" id="main">
+
+  <h2>體重 <span class="tag good">整體正向（附註）</span></h2>
+  <div class="key">六週內 <b>3.12 → 3.57 kg（+14%）</b>，穩定上升，與癌症消瘦相反。<br><span class="hot">附註：</span>Susan 近日摸到肚偏硬 → 近期部分增重<b>有可能係積液</b>，非全部真肉（見「腹部 / 肚」分頁）。</div>
+  <div class="trend">
+    <div class="b" style="height:22%"></div><div class="b" style="height:37%"></div><div class="b" style="height:60%"></div><div class="b" style="height:54%"></div><div class="b" style="height:76%"></div><div class="b" style="height:88%"></div><div class="b" style="height:96%"></div><div class="b" style="height:100%"></div>
+  </div>
+  <div class="tx"><div>5/19</div><div>5/29</div><div>6/1</div><div>6/8</div><div>6/15</div><div>6/18</div><div>6/24</div><div>6/30</div></div>
+
+  <h2>目前用藥 <span class="tag info">體重約 3.57 kg</span></h2>
+  <div class="tw"><table>
+    <thead><tr><th>藥物</th><th>作用</th><th>重點</th></tr></thead>
+    <tbody>
+      <tr><th>Meloxidyl<br>消炎止痛</th><td>抗發炎痛楚</td><td>維持劑量。<b>要與食物同餵</b>；與 Palladia 有疊加傷胃風險。</td></tr>
+      <tr><th>Omeprazole<br>胃藥</th><td>護胃</td><td>每晚固定。只護胃，對腹瀉無效。</td></tr>
+      <tr><th>Palladia<br>標靶藥</th><td>控腫瘤＋縮腫塊</td><td>週一／三。<b>腸胃毒性是最常見副作用</b>。</td></tr>
+      <tr><th>Mirtazapine<br>開胃</th><td>刺激食慾＋止嘔</td><td>搽耳。<b>⚠ 疑似令 7/1 深夜躁動抓癢</b>，留意重複出現。</td></tr>
+      <tr><th>Atopica<br>環孢素</th><td>止皮膚痕癢</td><td>皮膚舒適的<b>關鍵</b>。有免疫抑制 → 留意傷口感染。近期較疏（見會診）。</td></tr>
+      <tr><th>Gabapentin<br>神經痛</th><td>神經性痛楚</td><td>已暫停。目前<b>無明顯神經痛 → 未必需要</b>。</td></tr>
+      <tr><th>Buprenorphine<br>突發止痛</th><td>中樞止痛（備用）</td><td>備而不用：留待傷口出血或劇痛等<b>突發時刻</b>。</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>嘔吐 <span class="tag good">長期良性模式</span></h2>
+  <div class="key">早於 6/17、6/24、6/28 已出現，<b>非新藥引起</b>。特徵：清晨、空肚一晚後、快食之後。屬「空肚膽汁性嘔吐」。</div>
+  <div class="sa">
+    <span class="pill do">做</span><div class="t"><b>睡前給一份小食</b>（半夜起身可再給幾口），縮短空肚時間。</div>
+    <span class="pill do">做</span><div class="t"><b>放慢早餐</b>：先少量／用慢食碗，安定後再給其餘。</div>
+  </div>
+
+  <h2>大便 <span class="tag watch">7/2 新出現軟便</span></h2>
+  <div class="key">6/23–7/1 都成形；<b>7/2 首次變稀</b>（偏軟 → 爛屎）。最似 <b>Palladia 早期反應</b>，屬預期副作用。</div>
+  <div class="sa">
+    <span class="pill do">做</span><div class="t">益生菌（Pro-Kolin／LactoBif）輔助；留意飲水、防脫水。</div>
+    <span class="pill if">若惡化</span><div class="t">與 Dr. Andrea 商討 <b>Palladia 暫停＋減量</b>；<b>Meloxidyl 或需同時暫停</b>。</div>
+  </div>
+
+  <h2>胃口 <span class="tag good">輕微降 · 整體正向</span></h2>
+  <div class="key">近幾天較多食剩，但<b>體重仍升</b> → 非厭食，Mirtazapine 正處理。（若同肚偏硬有關，見「腹部 / 肚」分頁）只有胃口持續差<span class="hot">並且</span>體重下跌，才屬警號。</div>
+
+  <h2>皮膚 / 過敏背景 <span class="tag info">抓癢的根源</span></h2>
+  <div class="key">奧莉絲有 <b>8 年免疫介導過敏性皮膚病</b>（塵蟎、花草、霉菌等）。2023 起靠 <b>Atopica 控制</b>；<b>一停就快速惡化</b> —— 2026年4月手術停藥兩週即舔到血肉模糊。<br>→ 頸部抓癢<b>主要係皮膚痕，唔係腫瘤神經痛</b>。Atopica 穩定 = 皮膚舒適的關鍵槓桿。</div>
+
+  <h2>每日重點觀察 <span class="tag act">剔完按「儲存今日」</span></h2>
+  <div class="checklist" id="cl">
+    <label class="chk"><input type="checkbox" data-i="0"><span class="box"></span><span class="txt"><b>抓頸</b>：程度／頻率比昨天如何？（尤其 mirtazapine 日子）</span></label>
+    <label class="chk"><input type="checkbox" data-i="1"><span class="box"></span><span class="txt"><b>頸部傷口</b>：有無新出血、異味、分泌物、擴散性紅腫、蒼蠅卵？</span></label>
+    <label class="chk"><input type="checkbox" data-i="2"><span class="box"></span><span class="txt"><b>肚（腹部）</b>：軟定硬？有無變大？按時有無閃避／唔舒服？</span></label>
+    <label class="chk"><input type="checkbox" data-i="3"><span class="box"></span><span class="txt"><b>是否仍活躍、主動親近？</b>（比食量更能反映舒適度）</span></label>
+    <label class="chk"><input type="checkbox" data-i="4"><span class="box"></span><span class="txt"><b>大便質地</b>：延續 7/2 軟便觀察</span></label>
+    <label class="chk"><input type="checkbox" data-i="5"><span class="box"></span><span class="txt"><b>清晨嘔吐</b>：睡前小食＋放慢早餐後，有無減少？</span></label>
+    <div class="btnrow">
+      <button class="btn save" id="saveBtn">儲存今日紀錄</button>
+      <button class="btn ghost" id="clearBtn">清除勾選</button>
+      <button class="btn ghost" id="exportBtn">匯出備份</button>
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <h2>紀錄歷史 <span class="tag good">堅持記錄 · 一目了然</span></h2>
+  <div class="streak">
+    <div class="big" id="streakNum">0</div>
+    <div><div class="lbl"><b>連續記錄天數</b></div><div class="lbl" id="totalDays">共記錄 0 日</div></div>
+  </div>
+  <div class="hbars" id="hbars"></div>
+  <div id="historyBody"></div>
+  <p class="note" id="storeNote">紀錄會儲存在此瀏覽器內。建議把此檔案下載並用瀏覽器開啟，每日剔完按「儲存今日紀錄」即可累積。若要與 Susan 的裝置同步，可用「匯出備份」。</p>
+
+  <h2>獸醫會診重點</h2>
+  <div class="sa">
+    <span class="pill do">問</span><div class="t"><b>腹部偏硬</b> → 需否觸診／超聲波排除積液或腫塊（影響舒適與體重解讀）。</div>
+    <span class="pill do">問</span><div class="t"><b>Atopica 目前較疏（約每 4–5 日）是否足夠控制皮膚復發</b>，定需要每日「再誘導」再減。</div>
+    <span class="pill do">問</span><div class="t"><b>Mirtazapine 躁動 vs 開胃效益</b>的取捨與劑量／時間。</div>
+    <span class="pill do">問</span><div class="t">頸部濕傷口：敷料選擇、感染與 fly-strike 預防。</div>
+    <span class="pill do">問</span><div class="t">Meloxidyl 每日 vs 隔日＋腎功能監測（1月尿檢有輕度異常）；buprenorphine 突發居家用法。</div>
+  </div>
+
+</div>
+
+<!-- ================= 頸部分頁 ================= -->
+<div class="tabpanel" id="neck">
+
+  <h2>頸部腫瘤與傷口 <span class="tag focus">本次焦點</span></h2>
+
+  <h3>進展</h3>
+  <div class="prog">
+    <div class="step"><div class="when">5月初（截肢後）</div><div class="what">多粒 &lt;0.1cm 散在小點</div></div>
+    <span class="arrow">→</span>
+    <div class="step"><div class="when">6月初</div><div class="what">開始擴散、互相融合</div></div>
+    <span class="arrow">→</span>
+    <div class="step"><div class="when">現在 7/2</div><div class="what">融合成單一 <b>約 5cm</b> 潰瘍傷口</div></div>
+  </div>
+  <div class="key">兩個月由散在小點融合成一個約 5cm 傷口 —— 屬<b>持續局部進展，但速度以「週」計，非急劇</b>。</div>
+
+  <h3>目前傷口狀況 <span class="tag good">相對安穩</span></h3>
+  <div class="key">大致<b>濕潤</b>；<b>唔抓就唔會流血</b>；暫無明顯分泌物、異味、變色。<br>→ 無異味＝暫無明顯感染／壞死；無自發出血＝血管未被侵蝕。呢個階段算穩。</div>
+
+  <h3>痛楚評估 <span class="tag good">目前偏低</span></h3>
+  <div class="key">無 Horner's 跡象（瞳孔、第三眼瞼、眼窩）；面部大部分時間放鬆；觸碰傷口唔太反應；吞嚥／擰頭無明顯痛。<br>→ <b>神經痛訊號少、頸部痛楚負擔低</b>。好消息：毋須過度加藥。</div>
+
+  <h3>傷口照護</h3>
+  <div class="sa">
+    <span class="pill ok">做得好</span><div class="t">手工棉布＋棉墊防抓，每日換洗 2 次。保護做得好，抓穿已很少。</div>
+    <span class="pill do">加強</span><div class="t"><b>加一層不黏傷口敷料</b>（non-adherent pad，如 Melolin／Telfa）墊喺濕傷口同棉布之間 —— 濕傷口會黐住棉纖維，換敷料時會扯損／出血。</div>
+    <span class="pill do">做</span><div class="t"><b>修剪後爪</b>，減少抓損力度。</div>
+    <span class="pill if">香港潮濕</span><div class="t">留意<b>蒼蠅（fly-strike）</b>：傷口有無蟲卵／幼蟲。</div>
+  </div>
+
+  <h3>抓頸 <span class="tag info">主要係皮膚痕，非神經痛</span></h3>
+  <div class="key">大部分時間唔算嚴重。<b>7/1 深夜抓得多</b>（當日餵齊 4 種藥後）。最可疑係 <b>Mirtazapine</b>（7/1 新加，已知會令貓過度亢奮）→ 深夜躁動好可能同佢有關，<b>而非「4 種藥一齊」</b>。根源係 8 年過敏性皮膚病（見主要分頁）→ <b>保持 Atopica 穩定</b>先係減少抓癢最重要一環。</div>
+
+</div>
+
+<!-- ================= 腹部分頁 ================= -->
+<div class="tabpanel" id="belly">
+
+  <h2>腹部 / 肚 <span class="tag watch">新發現 · 建議盡快檢查</span></h2>
+  <div class="key">Susan 摸到肚<b>偏硬</b>。未必嚴重，但喺呢個癌症下值得由獸醫親手檢查 —— <b>唔係為咗追壽命</b>，而係若果係積液或腫塊壓住，本身就係一個<b>舒適問題</b>，有機會可以紓緩。</div>
+
+  <h3>可能原因（由最相關計起）</h3>
+  <ul class="plain">
+    <li><b>腹腔積液</b>（癌腫擴散引起）—— 同時解釋部分近期「增重」可能係水、而非真肉。</li>
+    <li><b>腹內腫塊／器官脹大</b>（肝、脾或新轉移）。</li>
+    <li><b>腹部繃緊（guarding）</b>—— 肚痛時肌肉收緊，摸落都會硬，本身就係痛楚訊號。</li>
+    <li>較良性但要先排除：<b>膀胱脹尿、宿便、脹氣</b>。</li>
+  </ul>
+
+  <h3>對之前判斷的影響</h3>
+  <div class="key">之前傾向「增重＝真肉、令人安心」→ 現在要<b>略為保守</b>：近期部分體重可能係積液／腫塊。但六週升幅平穩，而積液／腫塊多數短期形成 → 較可能係<b>新近疊加</b>，唔係解釋成成條上升線。亦可能同「胃口輕微降」係<b>同一原因</b>（腹部飽脹壓住食慾）。</div>
+
+  <h3>在家可以留意（唔好嚇親佢）</h3>
+  <ul class="plain">
+    <li>硬係<b>成個肚</b>定<b>一撻</b>？</li>
+    <li>Susan 輕按時佢會唔會<b>繃緊／閃避／走開</b>？（＝痛楚訊號）</li>
+    <li>肚有無<b>一日一日脹大</b>？</li>
+    <li>呼吸有無正常、唔費力？</li>
+    <li>過去一日有無正常屙尿、屙便？</li>
+  </ul>
+
+  <div class="sa">
+    <span class="pill do">做</span><div class="t"><b>一兩日內</b>同 Dr. Murdoch（可上門觸診）或 Dr. Andrea 提出；若懷疑積液／腫塊 → <b>VSH 超聲波</b>好快查到。</div>
+    <span class="pill urgent">即刻</span><div class="t">若出現：<b>呼吸急促／費力、屙尿屙唔出又用力、肚快速脹大、明顯痛、牙肉蒼白、嗜睡／虛脫</b> → 唔好等，即刻搵醫生。</div>
+  </div>
+
+</div>
+
+<footer>
+  本文件為照護參考，並非獸醫指示。<b>所有用藥與劑量以獸醫團隊判斷為準。</b><br>
+  奧莉絲 · 舒適為先
+</footer>
+
+<script>
+(function(){
+  /* ---- tabs ---- */
+  var tabs=document.querySelectorAll('.tab');
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){
+      tabs.forEach(function(x){ x.classList.remove('active'); });
+      document.querySelectorAll('.tabpanel').forEach(function(x){ x.classList.remove('active'); });
+      t.classList.add('active');
+      var p=document.getElementById(t.getAttribute('data-tab'));
+      if(p) p.classList.add('active');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+
+  /* ---- daily log ---- */
+  var KEY='orris_daily_log_v1';
+  var toastEl=document.getElementById('toast');
+  var TOTAL=document.querySelectorAll('#cl input[type=checkbox]').length||6;
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY))||[]; }catch(e){ return window.__log||[]; } }
+  function persist(log){ window.__log=log; try{ localStorage.setItem(KEY,JSON.stringify(log)); }catch(e){} }
+  function todayISO(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function fmt(iso){ var p=iso.split('-'); return parseInt(p[1],10)+'/'+parseInt(p[2],10); }
+  function stars(n){ n=Math.min(n,TOTAL); return '★'.repeat(n)+'☆'.repeat(TOTAL-n); }
+  function toast(msg){ toastEl.textContent=msg; setTimeout(function(){ if(toastEl.textContent===msg) toastEl.textContent=''; },2600); }
+  function streak(log){
+    if(!log.length) return 0;
+    var dates={}; log.forEach(function(e){ dates[e.date]=true; });
+    var d=new Date(); var t=todayISO();
+    if(!dates[t]){ d.setDate(d.getDate()-1); }
+    var count=0;
+    while(true){
+      var iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      if(dates[iso]){ count++; d.setDate(d.getDate()-1); } else break;
+    }
+    return count;
+  }
+  function render(){
+    var log=load().slice().sort(function(a,b){ return a.date<b.date?-1:1; });
+    document.getElementById('streakNum').textContent=streak(log);
+    document.getElementById('totalDays').textContent='共記錄 '+log.length+' 日';
+    var bars=document.getElementById('hbars'); bars.innerHTML='';
+    var recent=log.slice(-14);
+    if(!recent.length){ bars.innerHTML='<div class="empty">未有紀錄。剔完上面的項目，按「儲存今日紀錄」開始。</div>'; }
+    recent.forEach(function(e){
+      var col=document.createElement('div'); col.className='col';
+      var h=Math.max(8, Math.round(e.count/TOTAL*60));
+      var bar=document.createElement('div'); bar.className='bar'+(e.count<=2?' low':''); bar.style.height=h+'px'; bar.title=e.count+'/'+TOTAL;
+      var d=document.createElement('div'); d.className='d'; d.textContent=fmt(e.date);
+      col.appendChild(bar); col.appendChild(d); bars.appendChild(col);
+    });
+    var body=document.getElementById('historyBody');
+    if(!log.length){ body.innerHTML=''; return; }
+    var rows=log.slice().reverse().map(function(e){
+      return '<tr><td>'+fmt(e.date)+'</td><td class="stars">'+stars(e.count)+'</td><td>'+e.count+' / '+TOTAL+'</td></tr>';
+    }).join('');
+    body.innerHTML='<table class="htable"><tbody>'+rows+'</tbody></table>';
+  }
+  document.getElementById('saveBtn').addEventListener('click',function(){
+    var checks=document.querySelectorAll('#cl input[type=checkbox]');
+    var items=[], count=0;
+    checks.forEach(function(c){ if(c.checked){ count++; items.push(parseInt(c.getAttribute('data-i'),10)); } });
+    var log=load(); var t=todayISO();
+    var existing=log.filter(function(e){ return e.date!==t; });
+    existing.push({date:t,count:count,items:items});
+    persist(existing); render();
+    toast('已儲存 '+fmt(t)+' 的紀錄（'+count+'/'+TOTAL+'）✓');
+  });
+  document.getElementById('clearBtn').addEventListener('click',function(){
+    document.querySelectorAll('#cl input[type=checkbox]').forEach(function(c){ c.checked=false; });
+    toast('已清除今日勾選');
+  });
+  document.getElementById('exportBtn').addEventListener('click',function(){
+    var log=load();
+    var blob=new Blob([JSON.stringify(log,null,2)],{type:'application/json'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a'); a.href=url; a.download='orris_daily_log.json'; a.click();
+    URL.revokeObjectURL(url);
+    toast('已匯出備份檔');
+  });
+  try{ localStorage.setItem('__t','1'); localStorage.removeItem('__t'); }
+  catch(e){ document.getElementById('storeNote').innerHTML='⚠️ 目前環境未能永久儲存紀錄。<b>請先下載此檔案，再用瀏覽器（如 Safari／Chrome）開啟</b>，儲存功能就會生效。'; }
+  render();
+})();
+</script>
+
+</body>
+</html>
