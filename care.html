@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>奧莉絲 · 照護提示</title>
+<style>
+  :root{
+    --ink:#23241f;--ink-soft:#54564c;--ink-faint:#8b8d80;
+    --paper:#f5f2ea;--card:#fffdf8;--line:#ddd7c8;--line-soft:#ebe6d9;
+    --sage:#5f7355;--sage-bg:#e9eee2;--clay:#b5623c;--clay-bg:#f6e8df;
+    --gold:#9a7b1e;--gold-bg:#f6efd6;--slate:#4f6a82;--slate-bg:#e7edf2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:"PingFang HK","PingFang TC","Microsoft JhengHei","Noto Sans TC","Heiti TC",sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.6;
+    padding:clamp(14px,4vw,40px);max-width:820px;margin:0 auto;
+    font-size:clamp(15px,1.5vw,16px);
+  }
+  header{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:20px}
+  .kicker{font-size:.7rem;letter-spacing:.14em;color:var(--clay);font-weight:700;margin-bottom:8px}
+  h1{font-size:clamp(1.5rem,5vw,2.2rem);font-weight:800;line-height:1.2}
+  .updated{color:var(--ink-faint);font-size:.8rem;margin-top:8px}
+
+  /* objectives */
+  .obj{background:var(--sage-bg);border-left:5px solid var(--sage);border-radius:6px;padding:16px 18px;margin-bottom:26px}
+  .obj .row{display:flex;gap:11px;align-items:baseline;margin-bottom:8px}
+  .obj .row:last-child{margin-bottom:0}
+  .obj .n{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;align-self:center}
+  .obj .row.two .n{background:var(--ink-faint)}
+  .obj b{font-weight:800}
+  .obj .sub{color:var(--ink-soft);font-size:.85rem}
+
+  h2{font-size:1.12rem;font-weight:800;margin:26px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .tag{font-size:.6rem;letter-spacing:.08em;padding:2px 8px;border-radius:100px;font-weight:700}
+  .tag.good{background:var(--sage-bg);color:var(--sage)}
+  .tag.watch{background:var(--gold-bg);color:var(--gold)}
+  .tag.act{background:var(--clay-bg);color:var(--clay)}
+  .tag.info{background:var(--slate-bg);color:var(--slate)}
+
+  p{margin-bottom:8px}
+  .key{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:12px 15px;margin-bottom:10px}
+  .key b{font-weight:800}
+  strong{font-weight:800}
+  .hot{color:var(--clay);font-weight:800}
+
+  /* signal -> action rows */
+  .sa{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;margin:10px 0}
+  .sa .pill{font-size:.62rem;font-weight:800;padding:3px 8px;border-radius:5px;height:fit-content;white-space:nowrap;align-self:start;margin-top:2px}
+  .pill.do{background:var(--clay-bg);color:var(--clay)}
+  .pill.if{background:var(--gold-bg);color:var(--gold)}
+  .sa div.t{color:var(--ink-soft);font-size:.95rem}
+  .sa div.t b{color:var(--ink);font-weight:800}
+
+  /* table */
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:10px 0}
+  table{border-collapse:collapse;width:100%;min-width:440px;background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line-soft);font-size:.9rem}
+  thead th{background:var(--ink);color:var(--paper);font-weight:700}
+  tbody th{font-weight:800;white-space:nowrap}
+  tbody tr:last-child td,tbody tr:last-child th{border-bottom:none}
+
+  /* mini weight trend */
+  .trend{display:flex;align-items:flex-end;gap:5px;height:64px;margin:12px 0 3px}
+  .trend .b{flex:1;background:var(--sage);border-radius:3px 3px 0 0;opacity:.9}
+  .tx{display:flex;gap:5px}
+  .tx div{flex:1;text-align:center;font-size:.58rem;color:var(--ink-faint)}
+
+  /* CHECKABLE checklist */
+  .checklist{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 16px}
+  .chk{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid var(--line-soft);cursor:pointer;user-select:none}
+  .chk:last-child{border-bottom:none}
+  .chk input{position:absolute;opacity:0;width:0;height:0}
+  .chk .box{flex-shrink:0;width:20px;height:20px;border:2px solid var(--clay);border-radius:5px;margin-top:1px;position:relative;transition:.15s;background:#fff}
+  .chk input:checked ~ .box{background:var(--clay);border-color:var(--clay)}
+  .chk input:checked ~ .box::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+  .chk .txt{font-size:.95rem;line-height:1.5}
+  .chk input:checked ~ .txt{color:var(--ink-faint);text-decoration:line-through}
+  .chk .txt b{font-weight:800}
+  .chk input:focus-visible ~ .box{outline:2px solid var(--slate);outline-offset:2px}
+  .reset{margin-top:12px;font-size:.8rem;color:var(--slate);background:none;border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+
+  footer{margin-top:30px;padding-top:14px;border-top:1px solid var(--line);color:var(--ink-faint);font-size:.78rem}
+  footer b{color:var(--ink-soft)}
+  @media print{body{background:#fff;padding:0;font-size:11pt}.key,table,.obj,.checklist{break-inside:avoid}.reset{display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">奧莉絲 · 短期至中期照護提示</div>
+  <h1>奧莉絲 · 照護提示</h1>
+  <div class="updated">更新：2026年7月2日 · 給 Steven 與 Susan</div>
+</header>
+
+<div class="obj">
+  <div class="row"><div class="n">1</div><div><b>首要：盡量提升奧莉絲當下的舒適與生活質素。</b></div></div>
+  <div class="row two"><div class="n">2</div><div><b>次要：延長壽命</b><span class="sub">（排在舒適之後）</span></div></div>
+  <p style="margin:10px 0 0;font-size:.82rem;color:var(--ink-soft)">Palladia 與 Atopica 同時服務首要目標（縮腫塊、止痕），非只為壽命。</p>
+</div>
+
+<h2>體重 <span class="tag good">最令人安心</span></h2>
+<div class="key">六週內 <b>3.12 → 3.57 kg（+14%）</b>，穩定上升。與癌症消瘦相反 → 整體營養持續正向。</div>
+<div class="trend">
+  <div class="b" style="height:22%"></div><div class="b" style="height:37%"></div><div class="b" style="height:60%"></div><div class="b" style="height:54%"></div><div class="b" style="height:76%"></div><div class="b" style="height:88%"></div><div class="b" style="height:96%"></div><div class="b" style="height:100%"></div>
+</div>
+<div class="tx"><div>5/19</div><div>5/29</div><div>6/1</div><div>6/8</div><div>6/15</div><div>6/18</div><div>6/24</div><div>6/30</div></div>
+<p style="font-size:.82rem;color:var(--ink-soft);margin-top:8px">可請 Dr. Andrea 確認屬真正體重、非積液。</p>
+
+<h2>目前用藥 <span class="tag info">體重約 3.57 kg</span></h2>
+<div class="tw"><table>
+  <thead><tr><th>藥物</th><th>作用</th><th>重點</th></tr></thead>
+  <tbody>
+    <tr><th>Meloxidyl<br>消炎止痛</th><td>抗發炎痛楚</td><td>維持劑量。<b>要與食物同餵</b>；與 Palladia 有疊加傷胃風險。</td></tr>
+    <tr><th>Omeprazole<br>胃藥</th><td>護胃</td><td>每晚固定。只護胃，對腹瀉無效。</td></tr>
+    <tr><th>Palladia<br>標靶藥</th><td>控腫瘤＋縮腫塊</td><td>週一／三。<b>腸胃毒性是最常見副作用</b>。</td></tr>
+    <tr><th>Mirtazapine<br>開胃</th><td>刺激食慾＋止嘔</td><td>搽耳。留意會否過度亢奮。</td></tr>
+    <tr><th>Atopica<br>環孢素</th><td>止皮膚痕癢</td><td><b>有免疫抑制</b> → 留意傷口感染。</td></tr>
+    <tr><th>Gabapentin<br>神經痛</th><td>神經性痛楚</td><td>已暫停。</td></tr>
+  </tbody>
+</table></div>
+
+<h2>嘔吐 <span class="tag good">長期良性模式</span></h2>
+<div class="key">早於 6/17、6/24、6/28 已出現，<b>非新藥引起</b>。特徵：清晨、空肚一晚後、快食之後。屬「空肚膽汁性嘔吐」。</div>
+<div class="sa">
+  <span class="pill do">做</span><div class="t"><b>睡前給一份小食</b>（半夜起身可再給幾口），縮短空肚時間。</div>
+  <span class="pill do">做</span><div class="t"><b>放慢早餐</b>：先少量／用慢食碗，安定後再給其餘。</div>
+</div>
+
+<h2>大便 <span class="tag watch">7/2 新出現軟便</span></h2>
+<div class="key">6/23–7/1 都成形；<b>7/2 首次變稀</b>（偏軟 → 爛屎）。最似 <b>Palladia 早期反應</b>（餵後約 10 小時），屬預期副作用。</div>
+<div class="sa">
+  <span class="pill do">做</span><div class="t">益生菌（Pro-Kolin／LactoBif）輔助；留意飲水、防脫水。</div>
+  <span class="pill if">若惡化</span><div class="t">與 Dr. Andrea 商討 <b>Palladia 暫停＋減量</b>；<b>Meloxidyl 或需同時暫停</b>（胃藥護唔到下消化道）。</div>
+</div>
+
+<h2>胃口 <span class="tag good">輕微降 · 整體正向</span></h2>
+<div class="key">近幾天較多食剩，但<b>體重仍升</b> → 非厭食，Mirtazapine 正處理。只有胃口持續差<span class="hot">並且</span>體重下跌，才屬警號。</div>
+
+<h2>抓頸 / 皮膚 <span class="tag info">兩個可能原因</span></h2>
+<div class="key">抓頸可能是 <b>皮膚痕</b>（Atopica）或 <b>神經痛</b>（gabapentin），因兩藥時間重疊，<b>暫時分不清</b>。可能主要是皮膚問題。</div>
+<div class="sa">
+  <span class="pill do">做</span><div class="t"><b>每日看頸部傷口</b>：有無新分泌物、異味、擴散性紅腫（Atopica 免疫抑制 → 防感染）。</div>
+</div>
+
+<h2>每日重點觀察 <span class="tag act">可點擊打勾</span></h2>
+<div class="checklist" id="cl">
+  <label class="chk"><input type="checkbox"><span class="box"></span><span class="txt"><b>抓頸</b>：比昨天改善／變差／無變化？</span></label>
+  <label class="chk"><input type="checkbox"><span class="box"></span><span class="txt"><b>是否仍活躍、主動親近？</b>（比食量更能反映舒適度）</span></label>
+  <label class="chk"><input type="checkbox"><span class="box"></span><span class="txt"><b>頸部傷口</b>：大小／出血／分泌物／氣味有變？</span></label>
+  <label class="chk"><input type="checkbox"><span class="box"></span><span class="txt"><b>大便質地</b>：延續 7/2 軟便觀察（未來 48–72 小時）</span></label>
+  <label class="chk"><input type="checkbox"><span class="box"></span><span class="txt"><b>清晨嘔吐</b>：試咗睡前小食＋放慢早餐後，有無減少？</span></label>
+  <button class="reset" onclick="document.querySelectorAll('#cl input').forEach(function(c){c.checked=false})">全部重設</button>
+</div>
+
+<h2>獸醫會診重點</h2>
+<div class="sa">
+  <span class="pill do">問</span><div class="t">確認體重上升屬真正體重、非積液。</div>
+  <span class="pill do">問</span><div class="t">Palladia 舒適效益 vs 腸胃代價；Meloxidyl 每日 vs 隔日＋腎功能監測。</div>
+  <span class="pill do">問</span><div class="t">buprenorphine 作突發痛楚層（留意鎮靜疊加）；待 Atopica 穩定後如何重測 gabapentin。</div>
+</div>
+
+<footer>
+  本文件為照護參考，並非獸醫指示。<b>所有用藥與劑量以獸醫團隊判斷為準。</b><br>
+  奧莉絲 · 舒適為先
+</footer>
+
+</body>
+</html>
